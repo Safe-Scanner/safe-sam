@@ -1,0 +1,23 @@
+{
+  "name": "safe-sam",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Safe-Scanner/safe-sam.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Safe-Scanner/safe-sam/issues"
+  },
+  "homepage": "https://github.com/Safe-Scanner/safe-sam#readme",
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-dotenv-plugin": "^6.0.0"
+  }
+}
