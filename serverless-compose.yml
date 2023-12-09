@@ -1,7 +1,0 @@
-
-services:
-  safe-sam-functions:
-    path: ./src/functions
-
-  safe-sam-resources:
-    path: ./src/resources
