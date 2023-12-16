@@ -29,6 +29,7 @@ provider:
 plugins:
   - serverless-offline
   - serverless-webpack
+  - serverless-dotenv-plugin
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -64,7 +65,7 @@ plugins:
 #    - include-me-dir/**
 
 functions:
-  searchWallet:
+  SearchWallet:
     handler: ./src/services/search/handler.search
     description: search wallet and transaction hash
     name: ${self:service}-search-${sls:stage}
@@ -75,6 +76,44 @@ functions:
           method: get
           private: false
           cors: true
+
+
+  Wallet:
+    handler: ./src/services/wallet/handler.wallet
+    description:  wallet 
+    name: ${self:service}-wallet-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/wallet
+          method: get
+          private: false
+          cors: true
+
+  Balances:
+    handler: ./src/services/balances/handler.balances
+    description: balances
+    name: ${self:service}-balances-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/balances
+          method: get
+          private: false
+          cors: true
+
+  AllTransactions:
+    handler: ./src/services/alltransactions/handler.alltransactions
+    description: all-transactions
+    name: ${self:service}-all-transactions-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/all_transactions
+          method: get
+          private: false
+          cors: true
+   
 #resources:
 #  Resources:
 #    ApiGatewayRestApi:
