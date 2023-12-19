@@ -31,7 +31,11 @@ async function fetchERC20BalancesFromCovalent(address, network) {
   } catch (error) {
     // Handle errors, log to console, and return error details
     console.error("Error fetching data from Covalent:", error);
-    return error.response?.data || error.message;
+    return {
+      error: true,
+      error_message: error.message,
+      statucCode: error.response?.status || 500,
+    };
   }
 }
 

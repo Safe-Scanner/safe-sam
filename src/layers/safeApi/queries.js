@@ -23,7 +23,7 @@ async function fetchOwnerWallet(queryAddress) {
         if (response.status === 200) {
           // Add the response data to the result array
           if (response.data && response.data.safes.length)
-            results.push(response.data);
+            results.push({ [endpointName]: response.data });
         } else {
           // If the request was not successful, log an error message
           console.error(
@@ -171,12 +171,11 @@ async function fetchAllTransactions(queryAddress, options) {
       let modifiedEndpointUrl = endpointUrl;
 
       if (isWalletAddress(queryAddress)) {
-if(ordering){
-  modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?limit=${limit}&offset=${offset}&ordering=${ordering}&executed=${executed}&queued=${queued}&trusted=${trusted}`;
-
-}else {
-  modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?limit=${limit}&offset=${offset}&executed=${executed}&queued=${queued}&trusted=${trusted}`;
-}
+        if (ordering) {
+          modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?limit=${limit}&offset=${offset}&ordering=${ordering}&executed=${executed}&queued=${queued}&trusted=${trusted}`;
+        } else {
+          modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?limit=${limit}&offset=${offset}&executed=${executed}&queued=${queued}&trusted=${trusted}`;
+        }
         try {
           // Make an HTTP GET request to the network endpoint
           const response = await axios.get(modifiedEndpointUrl);

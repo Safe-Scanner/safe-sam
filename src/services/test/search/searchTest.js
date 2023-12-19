@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { search } = require("../../search/handler");
 const { alltransactions } = require("../../alltransactions/handler");
+const { balances } = require("../../balances/handler");
 
 // Test Data Files
 describe("Search Api test", function () {
@@ -12,6 +13,6 @@ describe("Search Api test", function () {
     this.timeout(50000);
   });
 it("test",async ()=>{
-  await alltransactions({queryStringParameters: {query:"0x4855b6c0f7d02709F812bA33A2083FF57178B790"}})
+  await balances({queryStringParameters: {query:"0x279EEa1dA583dCcfb0Fc99bb11A5ffd9EE711F65",network:'mainnet'}})
 })
 });

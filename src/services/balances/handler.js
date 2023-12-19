@@ -16,14 +16,18 @@ module.exports.balances = middlewareHandler(async (event) => {
   // Fetch data for all endpoints concurrently
   if (isWalletAddress(queryAddress)) {
     results = await fetchERC20BalancesFromCovalent(queryAddress, network);
-    console.log("results====>",results)
     if (results.error) {
       return {
         statusCode: 200,
-        body: { message: results.statusText },
+        body: { message: results.error_message },
       };
     }
-    return results.data.items;
+    const totalQuoteSum = results.data.items.reduce((sum, item) => sum + item.quote, 0);
+    const newData = results.data.items.map((item) => ({
+      ...item,
+      totalQuote:totalQuoteSum,
+    }));
+    return newData;
   } else {
     return {
       statusCode: 403,

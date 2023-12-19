@@ -18,28 +18,50 @@ module.exports.search = middlewareHandler(async (event) => {
 
   // Fetch data for all endpoints concurrently
   if (isWalletAddress(queryAddress)) {
-    results = await fetchOwnerWallet(queryAddress);
-    if (results.length > 0) {
-      const safeAddresses = results[0].safes;
-      const safeResult = [];
-      const safeAddressPromises = safeAddresses.map(async (safeAddress) => {
-        const safeResults = await fetchWallet(safeAddress);
-        safeResult.push(safeResults);
+    const [ownerResult, safeResults] = await Promise.all([
+      fetchOwnerWallet(queryAddress),
+      fetchWallet(queryAddress),
+    ]);
+
+    const resultObject = {};
+
+    ownerResult.map((entry) => {
+      Object.entries(entry).map(([network, data]) => {
+        const safesArray = data.safes || [];
+        resultObject[network.toLowerCase()] = [...new Set(safesArray)];
       });
-      await Promise.all(safeAddressPromises);
-      results = safeResult[0];
-    } else {
-      results = await fetchWallet(queryAddress);
-    }
+    });
+
+    safeResults.map((entry) => {
+      Object.entries(entry).map(([network, data]) => {
+        const safesArray = data.address || [];
+        if (resultObject[network.toLowerCase()] !== undefined) {
+          resultObject[network.toLowerCase()] = [
+            ...new Set(resultObject[network.toLowerCase()].concat(safesArray)),
+          ];
+        } else {
+          resultObject[network.toLowerCase()] = [safesArray];
+        }
+      });
+    });
+    results = resultObject;
+    // console.log("ownerResult",result)
   } else if (isTransactionHash(queryAddress)) {
     results = await fetchMultiSignatureTransaction(queryAddress);
-
+    const resultObject = {};
     if (results.length <= 0) {
       results = await fetchModuleTransaction(queryAddress);
     }
     if (results.length <= 0) {
       results = await fetchTransactionHash(queryAddress);
     }
+    results.map((entry) => {
+      Object.entries(entry).map(([network, data]) => {
+        const safesArray = data.safeTxHash || [];
+        resultObject[network.toLowerCase()] = [safesArray];
+      });
+    });
+    results = resultObject;
   } else {
     return {
       statusCode: 403,
@@ -54,5 +76,5 @@ module.exports.search = middlewareHandler(async (event) => {
     };
   }
   // Return the result array
-  return results[0];
+  return results;
 });

@@ -6,7 +6,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
 console.log(`Current environment ${process.env.NODE_ENV}`)
 
 dotenv.config({
-  path: path.resolve(__dirname, `.env.${process.env.NODE_ENV}`),
+  path: path.resolve(__dirname, `.env`),
 })
 
-console.log('process.env', process.env)
+console.log('process.env', path.resolve(__dirname, `.env`),)
