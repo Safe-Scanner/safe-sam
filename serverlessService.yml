@@ -113,7 +113,29 @@ functions:
           method: get
           private: false
           cors: true
-   
+  MultisigTtansaction:
+    handler: ./src/services/multisigtransactions/handler.multisigtransactions
+    description: multisig-transaction
+    name: ${self:service}-multisig-transactions-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/multisig-transactions
+          method: get
+          private: false
+          cors: true
+
+  ModuleTransaction:
+    handler: ./src/services/moduletransaction/handler.moduletransaction
+    description: module-transaction
+    name: ${self:service}-module-transaction-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/module-transaction
+          method: get
+          private: false
+          cors: true
 #resources:
 #  Resources:
 #    ApiGatewayRestApi:

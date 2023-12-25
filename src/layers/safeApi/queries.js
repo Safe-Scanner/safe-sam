@@ -2,7 +2,7 @@ const {
   NETWORKS_ENDPOINTS,
   COVALIENT_NETWORKS,
 } = require("../../common/constant");
-const { isWalletAddress } = require("../../common/utils");
+const { isWalletAddress, isTransactionHash } = require("../../common/utils");
 const axios = require("axios");
 
 async function fetchOwnerWallet(queryAddress) {
@@ -159,8 +159,44 @@ async function fetchModuleTransaction(queryAddress) {
     console.error(`Error: ${error.message}`);
   }
 }
-async function fetchTransactionHash(queryAddress) {}
+async function fetchTransactionHash(safetxhash) {
+  let results = [];
+  // Use Object.entries to convert the object into an array of key-value pairs
+  const endpointPromises = Object.entries(NETWORKS_ENDPOINTS).map(
+    async ([endpointName, endpointUrl]) => {
+      let modifiedEndpointUrl = endpointUrl;
 
+      if (isTransactionHash(safetxhash)) {
+        modifiedEndpointUrl = `${modifiedEndpointUrl}multisig-transactions/${safetxhash}`;
+      }
+
+      try {
+        // Make an HTTP GET request to the network endpoint
+        const response = await axios.get(modifiedEndpointUrl);
+
+        if (response.status === 200) {
+          // Add the response data to the result array
+          if (response.data) results.push({ [endpointName]: response.data });
+        } else {
+          // If the request was not successful, log an error message
+          console.error(
+            `Error: Unable to fetch data from ${endpointName}. Status code: ${response.status}`
+          );
+        }
+      } catch (error) {
+        // Handle any exceptions that may occur during the request
+        console.error(`Error: ${error.message}`);
+      }
+    }
+  );
+  try {
+    // Execute all requests concurrently
+    await Promise.all(endpointPromises);
+    return results;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
 async function fetchAllTransactions(queryAddress, options) {
   const { ordering, limit, offset, executed, queued, trusted } = options;
 
@@ -247,7 +283,6 @@ async function fetchAllTransactions(queryAddress, options) {
     console.error(`Error: ${error.message}`);
   }
 }
-
 async function fetchBalances(queryAddress) {
   let results = [];
   // Use Object.entries to convert the object into an array of key-value pairs
