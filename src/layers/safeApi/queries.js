@@ -199,19 +199,28 @@ async function fetchTransactionHash(safetxhash) {
 }
 async function fetchAllTransactions(queryAddress, options) {
   const { ordering, limit, offset, executed, queued, trusted } = options;
-
   const results = [];
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORKS_ENDPOINTS).map(
     async ([endpointName, endpointUrl]) => {
       let modifiedEndpointUrl = endpointUrl;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?`;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}limit=${limit}&offset=${offset}`;
 
       if (isWalletAddress(queryAddress)) {
         if (ordering) {
-          modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?limit=${limit}&offset=${offset}&ordering=${ordering}&executed=${executed}&queued=${queued}&trusted=${trusted}`;
-        } else {
-          modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?limit=${limit}&offset=${offset}&executed=${executed}&queued=${queued}&trusted=${trusted}`;
+          modifiedEndpointUrl = `${modifiedEndpointUrl}&ordering=${ordering}`;
         }
+        if (executed) {
+          modifiedEndpointUrl = `${modifiedEndpointUrl}&executed=${executed}`;
+        }
+        if (queued) {
+          modifiedEndpointUrl = `${modifiedEndpointUrl}&queued=${queued}`;
+        }
+        if (trusted) {
+          modifiedEndpointUrl = `${modifiedEndpointUrl}&trusted=${trusted}`;
+        }
+        console.log("modifiedEndpointUrl===>", modifiedEndpointUrl);
         try {
           // Make an HTTP GET request to the network endpoint
           const response = await axios.get(modifiedEndpointUrl);
