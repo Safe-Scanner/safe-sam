@@ -10,7 +10,7 @@ const axios = require("axios");
  */
 async function fetchERC20BalancesFromCovalent(address, network) {
   // Construct the Covalent API endpoint URL
-  const url = `https://api.covalenthq.com/v1/${COVALIENT_NETWORKS[network]}/address/${address}/balances_v2/`;
+  const url = `https://api.covalenthq.com/v1/${COVALIENT_NETWORKS[network]}/address/${address}/balances_v2/?nft=true`;
 
   // Configuration for the Axios request
   const config = {
