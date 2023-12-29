@@ -4,7 +4,7 @@ const {
 } = require("../../common/constant");
 const { isWalletAddress, isTransactionHash } = require("../../common/utils");
 const axios = require("axios");
-
+const { getAddress } = require("viem");
 async function fetchOwnerWallet(queryAddress) {
   let results = [];
   // Use Object.entries to convert the object into an array of key-value pairs
@@ -47,6 +47,7 @@ async function fetchOwnerWallet(queryAddress) {
 }
 async function fetchWallet(queryAddress) {
   let results = [];
+  queryAddress = getAddress(queryAddress);
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORKS_ENDPOINTS).map(
     async ([endpointName, endpointUrl]) => {
