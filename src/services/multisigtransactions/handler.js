@@ -2,17 +2,23 @@
 const { middlewareHandler } = require("../middleware");
 
 const { isTransactionHash } = require("../../common/utils");
-const { fetchTransactionHash } = require("../../layers/safeApi/queries");
+const { fetchMultiSignatureTransaction } = require("../../layers/safeApi/transactionQueries");
 
 module.exports.multisigtransactions = middlewareHandler(async (event) => {
-  const safetxhash = event.query;
+  const network = event.network;
+  const queryAddress = event.query;
 
   // Initialize an array to store the results
   let results = [];
 
   // Fetch data for all endpoints concurrently
-  if (isTransactionHash(safetxhash)) {
-    results = await fetchTransactionHash(safetxhash);
+  if (isTransactionHash(queryAddress)) {
+    results = await fetchMultiSignatureTransaction(queryAddress, network);
+    if (results <= 0) {
+      if (network) {
+        results = await fetchMultiSignatureTransaction(queryAddress, null);
+      }
+    }
   } else {
     return {
       statusCode: 403,

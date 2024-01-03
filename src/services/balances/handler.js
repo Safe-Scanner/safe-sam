@@ -1,11 +1,8 @@
 // 'use strict';
 const { middlewareHandler } = require("../middleware");
-const axios = require("axios");
 
 const { isWalletAddress } = require("../../common/utils");
-const {
-  fetchERC20BalancesFromCovalent,
-} = require("../../layers/covalentHQ/queries");
+const { fetchERC20BalancesFromCovalent } = require("../../layers/covalentHQ/queries");
 
 module.exports.balances = middlewareHandler(async (event) => {
   const queryAddress = event.query;
@@ -25,9 +22,15 @@ module.exports.balances = middlewareHandler(async (event) => {
     const totalQuoteSum = results.data.items.reduce((sum, item) => sum + item.quote, 0);
     const newData = results.data.items.map((item) => ({
       ...item,
-      totalQuote:totalQuoteSum,
+      totalQuote: totalQuoteSum,
     }));
-    return newData;
+    if (newData.length <= 0) {
+      return {
+        statusCode: 200,
+        body: { message: "No record found" },
+      };
+    }
+    return newData[0];
   } else {
     return {
       statusCode: 403,

@@ -1,4 +1,4 @@
-const { COVALIENT_NETWORKS } = require("../../common/constant");
+const { NETWORK_LIST } = require("../../common/constant");
 const axios = require("axios");
 
 /**
@@ -10,15 +10,16 @@ const axios = require("axios");
  */
 async function fetchERC20BalancesFromCovalent(address, network) {
   // Construct the Covalent API endpoint URL
-  const url = `https://api.covalenthq.com/v1/${COVALIENT_NETWORKS[network]}/address/${address}/balances_v2/?nft=true`;
+  const api_key = process.env.COVALENT_KEY;
 
+  const url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_v2/?nft=true`;
   // Configuration for the Axios request
   const config = {
     headers: {
       "Content-Type": "application/json",
     },
     auth: {
-      username: process.env.COVALENT_KEY,
+      username: api_key,
       password: "",
     },
   };

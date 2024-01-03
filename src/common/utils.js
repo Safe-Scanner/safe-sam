@@ -9,7 +9,13 @@ function isWalletAddress(input) {
 
   return ethereumAddressRegex.test(input);
 }
+function isModuleTransaction(input) {
+  const moduletransactionregex = /^[a-iA-F0-9]{67}$/;
+  return moduletransactionregex.test(input);
+}
+
 module.exports = {
   isTransactionHash,
   isWalletAddress,
-}
+  isModuleTransaction,
+};
