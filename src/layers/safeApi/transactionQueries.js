@@ -2,9 +2,11 @@ const { NETWORK_LIST } = require("../../common/constant");
 const { isWalletAddress, isTransactionHash } = require("../../common/utils");
 const axios = require("axios");
 const { fetchWallet } = require("./walletQueries");
+const { getAddress } = require("viem");
 
 async function fetchModuleTransaction(queryAddress, network) {
   let results = [];
+  queryAddress = getAddress(queryAddress);
 
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
@@ -43,6 +45,7 @@ async function fetchModuleTransaction(queryAddress, network) {
 }
 async function fetchMultiSignatureTransaction(queryAddress, network) {
   let results = [];
+  queryAddress = getAddress(queryAddress);
 
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
@@ -121,6 +124,7 @@ async function fetchMultiSignatureTransaction(queryAddress, network) {
 async function fetchAllTransactions(queryAddress, network, options) {
   const { ordering, limit, offset, executed, queued, trusted } = options;
   const results = [];
+  queryAddress = getAddress(queryAddress);
   // return;
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
