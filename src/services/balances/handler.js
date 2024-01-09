@@ -30,7 +30,7 @@ module.exports.balances = middlewareHandler(async (event) => {
         body: { message: "No record found" },
       };
     }
-    return newData[0];
+    return newData;
   } else {
     return {
       statusCode: 403,

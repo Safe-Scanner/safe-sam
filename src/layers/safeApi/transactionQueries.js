@@ -6,7 +6,6 @@ const { getAddress } = require("viem");
 
 async function fetchModuleTransaction(queryAddress, network) {
   let results = [];
-  queryAddress = getAddress(queryAddress);
 
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
@@ -45,7 +44,6 @@ async function fetchModuleTransaction(queryAddress, network) {
 }
 async function fetchMultiSignatureTransaction(queryAddress, network) {
   let results = [];
-  queryAddress = getAddress(queryAddress);
 
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
