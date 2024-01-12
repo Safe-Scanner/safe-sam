@@ -5,7 +5,6 @@ const { isWalletAddress, isTransactionHash, isModuleTransaction } = require("../
 const {
   fetchMultiSignatureTransaction,
   fetchModuleTransaction,
-  fetchTransactionHash,
 } = require("../../layers/safeApi/transactionQueries");
 const { fetchWallet, fetchOwnerWallet } = require("../../layers/safeApi/walletQueries");
 
@@ -33,14 +32,12 @@ module.exports.search = middlewareHandler(async (event) => {
     safeResults.map((entry) => {
       Object.entries(entry).map(([network, data]) => {
         const safesArray = data || [];
-        for (const safedata of safesArray) {
-          if (resultObject[network.toLowerCase()] !== undefined) {
-            resultObject[network.toLowerCase()] = [
-              ...new Set(resultObject[network.toLowerCase()].concat(safedata.address)),
-            ];
-          } else {
-            resultObject[network.toLowerCase()] = [safedata.address];
-          }
+        if (resultObject[network.toLowerCase()] !== undefined) {
+          resultObject[network.toLowerCase()] = [
+            ...new Set(resultObject[network.toLowerCase()].concat(safesArray.address)),
+          ];
+        } else {
+          resultObject[network.toLowerCase()] = [safesArray.address];
         }
       });
     });
@@ -48,16 +45,15 @@ module.exports.search = middlewareHandler(async (event) => {
   } else if (isModuleTransaction(queryAddress)) {
     results = await fetchModuleTransaction(queryAddress, network);
     const resultObject = {};
-
     results.map((entry) => {
       Object.entries(entry).map(([network, data]) => {
         const safesArray = data || [];
         if (resultObject[network.toLowerCase()] !== undefined) {
           resultObject[network.toLowerCase()] = [
-            ...new Set(resultObject[network.toLowerCase()].concat(safesArray.safe)),
+            ...new Set(resultObject[network.toLowerCase()].concat(safesArray.moduleTransactionId)),
           ];
         } else {
-          resultObject[network.toLowerCase()] = [safesArray.safe];
+          resultObject[network.toLowerCase()] = [safesArray.moduleTransactionId];
         }
       });
     });
@@ -65,16 +61,17 @@ module.exports.search = middlewareHandler(async (event) => {
   } else if (isTransactionHash(queryAddress)) {
     results = await fetchMultiSignatureTransaction(queryAddress, network);
     const resultObject = {};
+
     results.map((entry) => {
       Object.entries(entry).map(([network, data]) => {
         const safesArray = data || [];
         for (const safedata of safesArray) {
           if (resultObject[network.toLowerCase()] !== undefined) {
             resultObject[network.toLowerCase()] = [
-              ...new Set(resultObject[network.toLowerCase()].concat(safedata.safe)),
+              ...new Set(resultObject[network.toLowerCase()].concat(safedata.safeTxHash)),
             ];
           } else {
-            resultObject[network.toLowerCase()] = [safedata.safe];
+            resultObject[network.toLowerCase()] = [safedata.safeTxHash];
           }
         }
       });

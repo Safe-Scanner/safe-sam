@@ -1,7 +1,7 @@
 module.exports.middlewareHandler = (lambda) => {
   return async function (event, context) {
     let body, statusCode;
-    console.log("event in handler", event);
+    // console.log("event in handler", event);
     // Get params from event
     let params;
     if (event.body) {
