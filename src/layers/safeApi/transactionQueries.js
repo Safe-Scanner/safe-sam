@@ -21,7 +21,7 @@ async function fetchModuleTransaction(queryAddress, network) {
 
         if (response.status === 200) {
           // Add the response data to the result array
-          if (response.data) results.push({ [endpointName]: response.data[0] });
+          if (response.data) results.push({ [endpointName]: response.data });
         } else {
           // If the request was not successful, log an error message
           console.error(
