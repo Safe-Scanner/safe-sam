@@ -3,14 +3,14 @@ const { isWalletAddress } = require("../../common/utils");
 const axios = require("axios");
 const { getAddress } = require("viem");
 
-async function fetchBalances(queryAddress) {
+async function fetchBalances(walletAddress) {
   let results = [];
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST).map(async ([endpointName, endpointUrl]) => {
     let modifiedEndpointUrl = endpointUrl.endpointUrl;
 
-    if (isWalletAddress(queryAddress)) {
-      modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/balances/usd`;
+    if (isWalletAddress(walletAddress)) {
+      modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${walletAddress}/balances/usd`;
     }
 
     try {
@@ -41,15 +41,15 @@ async function fetchBalances(queryAddress) {
     console.error(`Error: ${error.message}`);
   }
 }
-async function fetchOwnerWallet(queryAddress) {
+async function fetchOwnerWallet(walletAddress) {
   let results = [];
-  queryAddress = getAddress(queryAddress);
+  walletAddress = getAddress(walletAddress);
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST).map(async ([endpointName, endpointUrl]) => {
     let modifiedEndpointUrl = endpointUrl.endpointUrl;
 
-    if (isWalletAddress(queryAddress)) {
-      modifiedEndpointUrl = `${modifiedEndpointUrl}owners/${queryAddress}/safes`;
+    if (isWalletAddress(walletAddress)) {
+      modifiedEndpointUrl = `${modifiedEndpointUrl}owners/${walletAddress}/safes`;
     }
 
     try {
@@ -80,23 +80,23 @@ async function fetchOwnerWallet(queryAddress) {
     console.error(`Error: ${error.message}`);
   }
 }
-async function fetchWallet(queryAddress, network) {
+async function fetchWallet(walletAddress, network) {
   let results = [];
-  queryAddress = getAddress(queryAddress);
+  walletAddress = getAddress(walletAddress);
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
     .filter(([endpointName]) => !network || endpointName.toLowerCase() === network.toLowerCase())
     .map(async ([endpointName, endpointUrl]) => {
       let modifiedEndpointUrl;
       modifiedEndpointUrl = endpointUrl.endpointUrl;
-      if (isWalletAddress(queryAddress)) {
-        modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}`;
+      if (isWalletAddress(walletAddress)) {
+        modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${walletAddress}`;
       }
 
       try {
         // Make an HTTP GET request to the network endpoint
         const response = await axios.get(modifiedEndpointUrl);
-        const creationResult = await fetchCreation(queryAddress, network);
+        const creationResult = await fetchCreation(walletAddress, network);
 
         if (response.status === 200) {
           if (response.data && creationResult) {
@@ -131,17 +131,17 @@ async function fetchWallet(queryAddress, network) {
     console.error(`Error: ${error.message}`);
   }
 }
-async function fetchCreation(queryAddress, network) {
+async function fetchCreation(walletAddress, network) {
   let results = [];
-  queryAddress = getAddress(queryAddress);
+  walletAddress = getAddress(walletAddress);
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
     .filter(([endpointName]) => !network || endpointName.toLowerCase() === network.toLowerCase())
     .map(async ([endpointName, endpointUrl]) => {
       let modifiedEndpointUrl;
       modifiedEndpointUrl = endpointUrl.endpointUrl;
-      if (isWalletAddress(queryAddress)) {
-        modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/creation/`;
+      if (isWalletAddress(walletAddress)) {
+        modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${walletAddress}/creation/`;
       }
 
       try {

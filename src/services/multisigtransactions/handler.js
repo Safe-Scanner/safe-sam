@@ -6,17 +6,17 @@ const { fetchMultiSignatureTransaction } = require("../../layers/safeApi/transac
 
 module.exports.multisigtransactions = middlewareHandler(async (event) => {
   const network = event.network;
-  const queryAddress = event.query;
+  const txHash = event.query;
 
   // Initialize an array to store the results
   let results = [];
 
   // Fetch data for all endpoints concurrently
-  if (isTransactionHash(queryAddress)) {
-    results = await fetchMultiSignatureTransaction(queryAddress, network);
+  if (isTransactionHash(txHash)) {
+    results = await fetchMultiSignatureTransaction(txHash, network);
     if (results <= 0) {
       if (network) {
-        results = await fetchMultiSignatureTransaction(queryAddress, null);
+        results = await fetchMultiSignatureTransaction(txHash, null);
       }
     }
   } else {

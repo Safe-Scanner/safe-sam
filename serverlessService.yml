@@ -77,10 +77,9 @@ functions:
           private: false
           cors: true
 
-
   Wallet:
     handler: ./src/services/wallet/handler.wallet
-    description:  wallet 
+    description: wallet
     name: ${self:service}-wallet-${sls:stage}
     timeout: 30
     events:
@@ -124,7 +123,14 @@ functions:
           method: get
           private: false
           cors: true
-
+  GetTransaction:
+    handler: ./src/services/transaction/handler.transaction
+    events:
+      - http:
+          path: v1/transaction
+          method: get
+          private: false
+          cors: true
   ModuleTransaction:
     handler: ./src/services/moduletransaction/handler.moduletransaction
     description: module-transaction

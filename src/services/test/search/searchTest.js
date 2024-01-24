@@ -1,10 +1,7 @@
-const { expect } = require("chai");
-const { search } = require("../../search/handler");
-const { alltransactions } = require("../../alltransactions/handler");
-const { balances } = require("../../balances/handler");
-const { wallet } = require("../../wallet/handler");
-
 // Test Data Files
+
+const { fetchAlchemyTransactionHash } = require("../../../layers/alchemy/queries");
+const { transaction } = require("../../transaction/handler");
 describe("Search Api test", function () {
   before(async function () {
     this.timeout(50000);
@@ -13,7 +10,10 @@ describe("Search Api test", function () {
   after(async function () {
     this.timeout(50000);
   });
-it("test",async ()=>{
-  await wallet({queryStringParameters: {query:"0x574E3aA34743C81f8f9e65C38599E4dA95E83ef1"}})
-})
+  it("test", async () => {
+    await transaction( {queryStringParameters: {
+        txhash:"0x991a32c1b8ad43c8ada4291755c3ae68a332c62baf71ddcfcdf4b58f07641ec7",
+      }
+    });
+  });
 });

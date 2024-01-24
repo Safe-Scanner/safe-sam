@@ -5,18 +5,18 @@ const { isModuleTransaction } = require("../../common/utils");
 const { fetchModuleTransaction } = require("../../layers/safeApi/transactionQueries");
 
 module.exports.moduletransaction = middlewareHandler(async (event) => {
-  const queryAddress = event.query;
+  const txModuleId = event.query;
   const network = event.network;
 
   // Initialize an array to store the results
   let results = [];
 
   // Fetch data for all endpoints concurrently
-  if (isModuleTransaction(queryAddress)) {
-    results = await fetchModuleTransaction(queryAddress, network);
+  if (isModuleTransaction(txModuleId)) {
+    results = await fetchModuleTransaction(txModuleId, network);
     if (results.length <= 0) {
       if (network) {
-        results = await fetchModuleTransaction(queryAddress, null);
+        results = await fetchModuleTransaction(txModuleId, null);
       }
     }
   } else {

@@ -1,9 +1,9 @@
-const { NETWORK_LIST } = require("../../common/constant");
-const { isWalletAddress, isTransactionHash } = require("../../common/utils");
+const { NETWORK_LIST, TRANSACTION_TYPES } = require("../../common/constant");
+const { isWalletAddress, isTransactionHash, isModuleTransaction } = require("../../common/utils");
 const axios = require("axios");
 const { fetchWallet } = require("./walletQueries");
 
-async function fetchModuleTransaction(queryAddress, network) {
+async function fetchModuleTransaction(txModuleId, network) {
   let results = [];
   // queryAddress = queryAddress;
 
@@ -13,7 +13,7 @@ async function fetchModuleTransaction(queryAddress, network) {
     .map(async ([endpointName, endpointUrl]) => {
       let modifiedEndpointUrl;
       modifiedEndpointUrl = endpointUrl.endpointUrl;
-      modifiedEndpointUrl = `${modifiedEndpointUrl}module-transaction/${queryAddress}`;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}module-transaction/${txModuleId}`;
 
       try {
         // Make an HTTP GET request to the network endpoint
@@ -42,7 +42,7 @@ async function fetchModuleTransaction(queryAddress, network) {
     console.error(`Error: ${error.message}`);
   }
 }
-async function fetchMultiSignatureTransaction(queryAddress, network) {
+async function fetchMultiSignatureTransaction(txHash, network) {
   let results = [];
   // queryAddress = queryAddress;
 
@@ -52,8 +52,8 @@ async function fetchMultiSignatureTransaction(queryAddress, network) {
     .map(async ([endpointName, endpointUrl]) => {
       let modifiedEndpointUrl = endpointUrl.endpointUrl;
 
-      if (isTransactionHash(queryAddress)) {
-        modifiedEndpointUrl = `${modifiedEndpointUrl}multisig-transactions/${queryAddress}`;
+      if (isTransactionHash(txHash)) {
+        modifiedEndpointUrl = `${modifiedEndpointUrl}multisig-transactions/${txHash}`;
       }
 
       try {
@@ -120,7 +120,7 @@ async function fetchMultiSignatureTransaction(queryAddress, network) {
     console.error(`Error: ${error.message}`);
   }
 }
-async function fetchAllTransactions(queryAddress, network, options) {
+async function fetchAllTransactions(txHash, network, options) {
   const { ordering, limit, offset, executed, queued, trusted } = options;
   const results = [];
   // queryAddress = getAddress(queryAddress);
@@ -131,9 +131,9 @@ async function fetchAllTransactions(queryAddress, network, options) {
     .map(async ([endpointName, endpointUrl]) => {
       let modifiedEndpointUrl;
       modifiedEndpointUrl = endpointUrl.endpointUrl;
-      modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${queryAddress}/all-transactions?`;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${txHash}/all-transactions?`;
       modifiedEndpointUrl = `${modifiedEndpointUrl}limit=${limit}&offset=${offset}`;
-      if (isWalletAddress(queryAddress)) {
+      if (isWalletAddress(txHash)) {
         if (ordering) {
           modifiedEndpointUrl = `${modifiedEndpointUrl}&ordering=${ordering}`;
         }
@@ -149,7 +149,7 @@ async function fetchAllTransactions(queryAddress, network, options) {
         try {
           // Make an HTTP GET request to the network endpoint
           const response = await axios.get(modifiedEndpointUrl);
-          const safeOwnerDetails = await fetchWallet(queryAddress, network);
+          const safeOwnerDetails = await fetchWallet(txHash, network);
 
           if (response.status === 200) {
             // Add the response data to the result array
@@ -218,7 +218,52 @@ async function fetchAllTransactions(queryAddress, network, options) {
   }
 }
 
+async function fetchTxFromSafe(address, txHash, network = null, txType = null) {
+  let results = [];
+  // queryAddress = queryAddress;
+
+  if (txType === TRANSACTION_TYPES.MODULE || isModuleTransaction(txHash)) {
+    txType = "module-transaction";
+  } else {
+    txType = "multisig-transactions";
+  }
+  // Use Object.entries to convert the object into an array of key-value pairs
+  const endpointPromises = Object.entries(NETWORK_LIST)
+    .filter(([endpointName]) => !network || endpointName.toLowerCase() === network.toLowerCase())
+    .map(async ([endpointName, endpointUrl]) => {
+      let modifiedEndpointUrl;
+      modifiedEndpointUrl = endpointUrl.endpointUrl;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${address}/${txType}/?transaction_hash=${txHash}`;
+
+      try {
+        // Make an HTTP GET request to the network endpoint
+        const response = await axios.get(modifiedEndpointUrl);
+
+        if (response.status === 200) {
+          // Add the response data to the result array
+          if (response.data.results) results.push(response.data.results[0]);
+        } else {
+          // If the request was not successful, log an error message
+          console.error(
+            `Error: Unable to fetch data from ${endpointName}. Status code: ${response.status}`
+          );
+        }
+      } catch (error) {
+        // Handle any exceptions that may occur during the request
+        console.error(`Error: ${error.message}`);
+      }
+    });
+
+  try {
+    // Execute all requests concurrently
+    await Promise.all(endpointPromises);
+    return results;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
 module.exports = {
+  fetchTxFromSafe,
   fetchMultiSignatureTransaction,
   fetchModuleTransaction,
   fetchAllTransactions,
