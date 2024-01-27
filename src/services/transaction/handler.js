@@ -9,6 +9,7 @@ const {
 const { fetchAlchemyTransactionHash } = require("../../layers/alchemy/queries");
 const { isModuleTransaction, isTransactionHash } = require("../../common/utils");
 const { TRANSACTION_TYPES } = require("../../common/constant");
+const { fetchUserOp } = require("../../layers/jiffyScan/userOp");
 
 module.exports.transaction = middlewareHandler(async (event) => {
   const txHash = event.hash;
@@ -44,6 +45,14 @@ module.exports.transaction = middlewareHandler(async (event) => {
         network: Object.keys(results[0])[0],
         transactionInfo: results[0][Object.keys(results[0])[0]],
       };
+    } else {
+      results = await fetchUserOp(txHash, network);
+      if (results.length > 0)
+        results = {
+          type: TRANSACTION_TYPES.USEROPS,
+          network: network,
+          transactionInfo: results[0][Object.keys(results[0])[0]][0],
+        };
     }
   } else {
     return {

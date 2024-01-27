@@ -29,7 +29,7 @@ const fetchAlchemyTransactionHash = async (hash, network) => {
     };
     for (const log of receipt.logs) {
       if (log.topics[0] === MODULE_TRANSACTION_TOPIC) {
-        txInfo.safe = log.address;
+        txInfo.safe = getAddress(log.address)
         txInfo.type = TRANSACTION_TYPES.MODULE;
         break;
       } else if (log.topics[0] === MULTI_SIGNATURE_TRANSACTION_TOPIC) {

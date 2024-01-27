@@ -1,12 +1,18 @@
 // 'use strict';
 const { middlewareHandler } = require("../middleware");
 
-const { isWalletAddress, isTransactionHash, isModuleTransaction } = require("../../common/utils");
+const {
+  isWalletAddress,
+  isTransactionHash,
+  isModuleTransaction,
+  isUsetrOpHash,
+} = require("../../common/utils");
 const {
   fetchMultiSignatureTransaction,
   fetchModuleTransaction,
 } = require("../../layers/safeApi/transactionQueries");
 const { fetchWallet, fetchOwnerWallet } = require("../../layers/safeApi/walletQueries");
+const { fetchUserOp } = require("../../layers/jiffyScan/userOp");
 
 module.exports.search = middlewareHandler(async (event) => {
   const queryAddress = event.query;
@@ -31,14 +37,8 @@ module.exports.search = middlewareHandler(async (event) => {
 
     safeResults.map((entry) => {
       Object.entries(entry).map(([network, data]) => {
-        const safesArray = data || [];
-        if (resultObject[network.toLowerCase()] !== undefined) {
-          resultObject[network.toLowerCase()] = [
-            ...new Set(resultObject[network.toLowerCase()].concat(safesArray.address)),
-          ];
-        } else {
-          resultObject[network.toLowerCase()] = [safesArray.address];
-        }
+        const safesArray = data.address || [];
+        resultObject[network.toLowerCase()] = [safesArray];
       });
     });
     results = resultObject;
@@ -61,22 +61,40 @@ module.exports.search = middlewareHandler(async (event) => {
   } else if (isTransactionHash(queryAddress)) {
     results = await fetchMultiSignatureTransaction(queryAddress, network);
     const resultObject = {};
-
-    results.map((entry) => {
-      Object.entries(entry).map(([network, data]) => {
-        const safesArray = data || [];
-        for (const safedata of safesArray) {
-          if (resultObject[network.toLowerCase()] !== undefined) {
-            resultObject[network.toLowerCase()] = [
-              ...new Set(resultObject[network.toLowerCase()].concat(safedata.safeTxHash)),
-            ];
-          } else {
-            resultObject[network.toLowerCase()] = [safedata.safeTxHash];
+    if (results.length <= 0) {
+      results = await fetchUserOp(queryAddress, network);
+      results.map((entry) => {
+        Object.entries(entry).map(([network, data]) => {
+          const safesArray = data || [];
+          for (const safedata of safesArray) {
+            if (resultObject[network.toLowerCase()] !== undefined) {
+              resultObject[network.toLowerCase()] = [
+                ...new Set(resultObject[network.toLowerCase()].concat(safedata.userOpHash)),
+              ];
+            } else {
+              resultObject[network.toLowerCase()] = [safedata.userOpHash];
+            }
           }
-        }
+        });
       });
-    });
-    results = resultObject;
+      results = resultObject;
+    } else {
+      results.map((entry) => {
+        Object.entries(entry).map(([network, data]) => {
+          const safesArray = data || [];
+          for (const safedata of safesArray) {
+            if (resultObject[network.toLowerCase()] !== undefined) {
+              resultObject[network.toLowerCase()] = [
+                ...new Set(resultObject[network.toLowerCase()].concat(safedata.safeTxHash)),
+              ];
+            } else {
+              resultObject[network.toLowerCase()] = [safedata.safeTxHash];
+            }
+          }
+        });
+      });
+      results = resultObject;
+    }
   } else {
     return {
       statusCode: 403,

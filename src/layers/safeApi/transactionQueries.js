@@ -223,7 +223,7 @@ async function fetchTxFromSafe(address, txHash, network = null, txType = null) {
   // queryAddress = queryAddress;
 
   if (txType === TRANSACTION_TYPES.MODULE || isModuleTransaction(txHash)) {
-    txType = "module-transaction";
+    txType = "module-transactions";
   } else {
     txType = "multisig-transactions";
   }

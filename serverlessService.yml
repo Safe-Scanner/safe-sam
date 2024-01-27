@@ -142,6 +142,19 @@ functions:
           method: get
           private: false
           cors: true
+
+  Getuserop:
+    handler: ./src/services/getuserop/handler.getuserops
+    description: getuserOps
+    name: ${self:service}-getuserop-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/user_op
+          method: get
+          private: false
+          cors: true
+
 #resources:
 #  Resources:
 #    ApiGatewayRestApi:
