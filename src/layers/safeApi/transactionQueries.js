@@ -68,7 +68,7 @@ async function fetchMultiSignatureTransaction(txHash, network) {
             if (transactions) {
               // const safeWalletAddress = transaction.safe;
               for (const safeOwnerDetail of safeOwnerDetails) {
-                const ownerdata = safeOwnerDetail?.[network];
+                const ownerdata = [safeOwnerDetail?.[Object.keys(safeOwnerDetail)[0]]];
                 if (ownerdata && ownerdata.length > 0) {
                   for (const ownerDetail of ownerdata) {
                     const confirmationResult = [];

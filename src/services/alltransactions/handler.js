@@ -33,18 +33,19 @@ module.exports.alltransactions = middlewareHandler(async (event) => {
       body: { message: "Invalid request" },
     };
   }
-  if (!results[0][network]) {
-    if (network) {
-      results = await fetchAllTransactions(queryAddress, null, {
-        ordering: orderList,
-        limit: pageSize,
-        offset: page,
-        executed: isExecuted,
-        queued: isTrusted,
-        trusted: isQueued,
-      });
-    }
-  }
+  // const key= Object.keys(results[0])[0]
+  // if (!results[0][key].results.length) {
+  //   if (network) {
+  //     results = await fetchAllTransactions(queryAddress, null, {
+  //       ordering: orderList,
+  //       limit: pageSize,
+  //       offset: page,
+  //       executed: isExecuted,
+  //       queued: isTrusted,
+  //       trusted: isQueued,
+  //     });
+  //   }
+  // }
   const filteredResults = results.filter((network) => network[Object.keys(network)].count > 0);
 
   if (filteredResults.length <= 0) {

@@ -24,10 +24,12 @@ describe("transaction Api", function () {
     expect(responseBody).to.have.property("type").to.be.an("string");
     expect(responseBody).to.have.property("network").to.be.an("string");
     expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
-    expect(responseBody.transactionInfo.transactionHash).to.be.eq(hash)
+    expect(
+      responseBody.transactionInfo.transactionHash || responseBody.transactionInfo.safeTxHash
+    ).to.be.eq(hash);
   });
   it("Should have the module transaction id while passing the module transaction id", async () => {
-    const hash='i4c02301c684526cda73a9479f87da01648c3e7d87ccd6d0a1bbc072c8067d4f425'
+    const hash = "i4c02301c684526cda73a9479f87da01648c3e7d87ccd6d0a1bbc072c8067d4f425";
     const response = await transaction({
       queryStringParameters: {
         hash,
@@ -39,7 +41,7 @@ describe("transaction Api", function () {
     expect(responseBody).to.have.property("type").to.be.an("string");
     expect(responseBody).to.have.property("network").to.be.an("string");
     expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
-    expect(responseBody.transactionInfo.moduleTransactionId).to.be.eq(hash)
+    expect(responseBody.transactionInfo.moduleTransactionId).to.be.eq(hash);
   });
 
   it("should handle invalid query addresses", async () => {

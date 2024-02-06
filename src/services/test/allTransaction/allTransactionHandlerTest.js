@@ -22,6 +22,8 @@ describe("alltransaction Api test", function () {
           offset: offset,
         },
       });
+      expect(response.statusCode).to.equal(200);
+
       response.body = JSON.parse(response.body);
       data = response.body[Object.keys(response.body)[0]];
       page_size += data.results.length;
@@ -49,6 +51,7 @@ describe("alltransaction Api test", function () {
           network: "matic",
         },
       });
+      expect(response.statusCode).to.equal(200);
       response.body = JSON.parse(response.body);
       data = response.body[Object.keys(response.body)[0]];
       page_size += data.results.length;
