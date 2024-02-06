@@ -214,14 +214,13 @@ async function fetchAllTransactions(txHash, network, options) {
     await Promise.all(endpointPromises);
     return results;
   } catch (error) {
-    console.error(`Error All Transacrion: ${error.message}`);
+    console.error(`Error All Transaction: ${error.message}`);
   }
 }
 
 async function fetchTxFromSafe(address, txHash, network = null, txType = null) {
   let results = [];
   // queryAddress = queryAddress;
-
   if (txType === TRANSACTION_TYPES.MODULE || isModuleTransaction(txHash)) {
     txType = "module-transactions";
   } else {
@@ -241,7 +240,8 @@ async function fetchTxFromSafe(address, txHash, network = null, txType = null) {
 
         if (response.status === 200) {
           // Add the response data to the result array
-          if (response.data.results) results.push(response.data.results[0]);
+          if (response?.data?.results?.length > 0)
+            results.push({ [endpointName]: response.data.results[0] });
         } else {
           // If the request was not successful, log an error message
           console.error(

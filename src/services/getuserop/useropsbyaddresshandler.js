@@ -1,19 +1,19 @@
 // 'use strict';
 const { middlewareHandler } = require("../middleware");
+const { fetchUserOpByAddress } = require("../../layers/jiffyScan/userOp");
 
-const { isModuleTransaction } = require("../../common/utils");
-const { fetchModuleTransaction } = require("../../layers/safeApi/transactionQueries");
-
-module.exports.moduletransaction = middlewareHandler(async (event) => {
-  const txModuleId = event.query;
+module.exports.getuseropbyaddress = middlewareHandler(async (event) => {
+  const txHash = event.safe;
   const network = event.network;
+  const first = !isNaN(event.first) ? parseInt(event.first) : 100;
+  const skip = !isNaN(event.skip) ? parseInt(event.skip) : 0;
 
   // Initialize an array to store the results
   let results = [];
 
-  // Fetch data for all endpoints concurrently
-  if (isModuleTransaction(txModuleId)) {
-    results = await fetchModuleTransaction(txModuleId, network);
+  // Fetch data for all endpoin mmts concurrently
+  if (txHash) {
+    results = await fetchUserOpByAddress(txHash, network, first, skip);
   } else {
     return {
       statusCode: 403,

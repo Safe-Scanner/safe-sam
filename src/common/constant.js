@@ -17,7 +17,7 @@ const NETWORK_LIST = {
   },
   base: {
     covalient_chain: "base-mainnet",
-    endpointUrl: `https://safe-transaction-goerli.safe.global/api/${NETWORKS_ENDPOINTS_VERSION}/`,
+    endpointUrl: `https://safe-transaction-base.safe.global/api/${NETWORKS_ENDPOINTS_VERSION}/`,
     alchemy: { network: Network.BASE_MAINNET, chain: chain.base },
     jiffysan_network: "base",
   },
@@ -40,7 +40,7 @@ const NETWORK_LIST = {
   },
   zkevm: {
     covalient_chain: "polygon-zkevm-mainnet",
-    endpointUrl: `https://safe-transaction-arbitrum.safe.global/api/${NETWORKS_ENDPOINTS_VERSION}/`,
+    endpointUrl: `https://safe-transaction-zkevm.safe.global/api/${NETWORKS_ENDPOINTS_VERSION}/`,
     alchemy: { network: Network.POLYGONZKEVM_MAINNET, chain: chain.polygonZkEvm },
   },
   oeth: {
@@ -66,7 +66,7 @@ const NETWORK_LIST = {
   },
   aurora: {
     covalient_chain: "aurora-mainnet",
-    endpointUrl: `https://safe-transaction-zksync.safe.global/api/${NETWORKS_ENDPOINTS_VERSION}/`,
+    endpointUrl: `https://safe-transaction-aurora.safe.global/api/${NETWORKS_ENDPOINTS_VERSION}/`,
   },
 };
 const TRANSACTION_TYPES = {

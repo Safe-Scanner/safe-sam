@@ -25,7 +25,7 @@ module.exports.transaction = middlewareHandler(async (event) => {
       results = {
         type: alchmyResponse.type,
         network: network,
-        transactionInfo: results[0],
+        transactionInfo: results[0][Object.keys(results[0])[0]],
       };
     }
   } else if (isModuleTransaction(txHash)) {

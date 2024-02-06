@@ -11,7 +11,7 @@ module.exports.alltransactions = middlewareHandler(async (event) => {
   // Initialize an array to store the results
   let results = [];
   const pageSize = limit > 0 ? limit : 25;
-  const page = (offset - 1) * pageSize ? (offset - 1) * pageSize : 0;
+  const page = offset ? offset : 0;
   const orderList = ordering ? ordering : null;
   const isExecuted = !!executed;
   const isTrusted = !!trusted;
@@ -33,7 +33,7 @@ module.exports.alltransactions = middlewareHandler(async (event) => {
       body: { message: "Invalid request" },
     };
   }
-  if (!results[network]) {
+  if (!results[0][network]) {
     if (network) {
       results = await fetchAllTransactions(queryAddress, null, {
         ordering: orderList,

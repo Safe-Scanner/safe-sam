@@ -3,13 +3,19 @@ const { middlewareHandler } = require("../middleware");
 
 const { isWalletAddress } = require("../../common/utils");
 const { fetchERC20BalancesFromCovalent } = require("../../layers/covalentHQ/queries");
+const { NETWORK_LIST } = require("../../common/constant");
 
 module.exports.balances = middlewareHandler(async (event) => {
   const queryAddress = event.query;
   const network = event.network;
   // Initialize an array to store the results
   let results = [];
-
+  if (!NETWORK_LIST[network]?.covalient_chain) {
+    return {
+      statusCode: 403,
+      body: { message: "Invalid network" },
+    };
+  }
   // Fetch data for all endpoints concurrently
   if (isWalletAddress(queryAddress)) {
     results = await fetchERC20BalancesFromCovalent(queryAddress, network);

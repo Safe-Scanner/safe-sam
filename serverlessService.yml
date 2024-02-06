@@ -154,6 +154,17 @@ functions:
           method: get
           private: false
           cors: true
+  UserOpsByAddress:
+    handler: ./src/services/getuserop/useropsbyaddresshandler.getuseropbyaddress
+    description: Get User Ops by address
+    name: ${self:service}-getuseropbyaddress-${sls:stage}
+    timeout: 30
+    events:
+      - http:
+          path: v1/user_ops
+          method: get
+          private: false
+          cors: true
 
 #resources:
 #  Resources:

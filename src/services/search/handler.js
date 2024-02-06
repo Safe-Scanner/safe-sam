@@ -1,18 +1,15 @@
 // 'use strict';
 const { middlewareHandler } = require("../middleware");
 
-const {
-  isWalletAddress,
-  isTransactionHash,
-  isModuleTransaction,
-  isUsetrOpHash,
-} = require("../../common/utils");
+const { isWalletAddress, isTransactionHash, isModuleTransaction } = require("../../common/utils");
 const {
   fetchMultiSignatureTransaction,
   fetchModuleTransaction,
+  fetchTxFromSafe,
 } = require("../../layers/safeApi/transactionQueries");
 const { fetchWallet, fetchOwnerWallet } = require("../../layers/safeApi/walletQueries");
 const { fetchUserOp } = require("../../layers/jiffyScan/userOp");
+const { fetchAlchemyTransactionHash } = require("../../layers/alchemy/queries");
 
 module.exports.search = middlewareHandler(async (event) => {
   const queryAddress = event.query;
@@ -63,25 +60,50 @@ module.exports.search = middlewareHandler(async (event) => {
     const resultObject = {};
     if (results.length <= 0) {
       results = await fetchUserOp(queryAddress, network);
-      results.map((entry) => {
-        Object.entries(entry).map(([network, data]) => {
-          const safesArray = data || [];
-          for (const safedata of safesArray) {
-            if (resultObject[network.toLowerCase()] !== undefined) {
-              resultObject[network.toLowerCase()] = [
-                ...new Set(resultObject[network.toLowerCase()].concat(safedata.userOpHash)),
-              ];
-            } else {
-              resultObject[network.toLowerCase()] = [safedata.userOpHash];
+      if (results.length <= 0) {
+        const alchmyResponse = await fetchAlchemyTransactionHash(queryAddress, network);
+        if (alchmyResponse?.safe) {
+          results = await fetchTxFromSafe(
+            alchmyResponse.safe,
+            queryAddress,
+            network,
+            alchmyResponse.type
+          );
+          results.map((entry) => {
+            Object.entries(entry).map(([network, data]) => {
+              const safesArray = data || [];
+              if (resultObject[network.toLowerCase()] !== undefined) {
+                resultObject[network.toLowerCase()] = [
+                  ...new Set(resultObject[network.toLowerCase()].concat(safesArray.safe)),
+                ];
+              } else {
+                resultObject[network.toLowerCase()] = [safesArray.safe];
+              }
+            });
+          });
+          results = resultObject;
+        }
+      } else {
+        results.map((entry) => {
+          Object.entries(entry).map(([network, data]) => {
+            const safesArray = data || [];
+            for (const safedata of safesArray) {
+              if (resultObject[network.toLowerCase()] !== undefined) {
+                resultObject[network.toLowerCase()] = [
+                  ...new Set(resultObject[network.toLowerCase()].concat(safedata.userOpHash)),
+                ];
+              } else {
+                resultObject[network.toLowerCase()] = [safedata.userOpHash];
+              }
             }
-          }
+          });
         });
-      });
-      results = resultObject;
+        results = resultObject;
+      }
     } else {
       results.map((entry) => {
         Object.entries(entry).map(([network, data]) => {
-          const safesArray = data || [];
+          const safesArray = [data] || [];
           for (const safedata of safesArray) {
             if (resultObject[network.toLowerCase()] !== undefined) {
               resultObject[network.toLowerCase()] = [

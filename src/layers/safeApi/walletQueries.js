@@ -176,4 +176,5 @@ async function fetchCreation(walletAddress, network) {
 module.exports = {
   fetchOwnerWallet,
   fetchWallet,
+  fetchCreation
 };
