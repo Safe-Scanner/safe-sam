@@ -31,7 +31,7 @@ module.exports.transaction = middlewareHandler(async (event) => {
       network: key,
       transactionInfo: {
         ...userOp,
-        sponsorShip: true,
+        sponsoredType: "Paymaster",
         sponsoredBy: poweredByResponse,
       },
     };
@@ -43,7 +43,11 @@ module.exports.transaction = middlewareHandler(async (event) => {
         results = {
           type: alchmyResponse.type,
           network: network,
-          transactionInfo: results[0][Object.keys(results[0])[0]],
+          transactionInfo: {
+            ...results[0][Object.keys(results[0])[0]],
+            sponsoredBy: alchmyResponse.sponsoredBy,
+            sponsorType: alchmyResponse.sponsorType,
+          },
         };
       }
     } else if (isModuleTransaction(txHash)) {
@@ -52,7 +56,11 @@ module.exports.transaction = middlewareHandler(async (event) => {
         results = {
           type: TRANSACTION_TYPES.MODULE,
           network: Object.keys(results[0])[0],
-          transactionInfo: results[0][Object.keys(results[0])[0]],
+          transactionInfo: {
+            ...results[0][Object.keys(results[0])[0]],
+            sponsoredBy: alchmyResponse.sponsoredBy,
+            sponsorType: alchmyResponse.sponsorType,
+          },
         };
       }
     } else if (isTransactionHash(txHash)) {
