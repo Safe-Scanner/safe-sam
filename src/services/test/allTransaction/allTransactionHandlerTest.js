@@ -26,7 +26,8 @@ describe("alltransaction Api test", function () {
 
       response.body = JSON.parse(response.body);
       data = response.body[Object.keys(response.body)[0]];
-      page_size += data.results.length;
+      console.log("result========",data.results)
+      page_size += data?.results?.length;
 
       if (!data.next) {
         expect(page_size).to.equal(data.count);

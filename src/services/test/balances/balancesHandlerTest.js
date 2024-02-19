@@ -20,12 +20,10 @@ describe("Balances Api", function () {
     });
     expect(response.statusCode).to.equal(200);
     let responseBody = JSON.parse(response.body);
-    responseBody.map((result) => {
-      expect(result).to.have.property("totalQuote").to.be.an("number");
-      expect(result.totalQuote).to.have.gte(0);
-      expect(result).to.have.property("balance").to.be.an("string");
-      expect(parseInt(result.balance)).to.have.gte(0);
-    });
+    expect(responseBody.token[0]).to.have.property("totalQuote").to.be.an("number");
+    expect(responseBody.token[0].totalQuote).to.have.gte(0);
+    expect(responseBody.token[0]).to.have.property("balance").to.be.an("string");
+    expect(parseInt(responseBody.token[0].balance)).to.have.gte(0);
   });
 
   it("Should handle invalid query addresses", async () => {

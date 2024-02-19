@@ -16,8 +16,8 @@ describe("covalentHQ Api test", function () {
     const network = "matic";
     const response = await fetchERC20BalancesFromCovalent(address, network);
 
-    expect(response.data).to.have.property("address").to.be.an("string");
-    let responseData = response.data.items;
+    expect(response.token.data).to.have.property("address").to.be.an("string");
+    let responseData = response.token.data.items;
     responseData.map((result) => {
       expect(result).to.have.property("contract_address").to.be.an("string");
       expect(result).to.have.property("balance").to.be.an("string");

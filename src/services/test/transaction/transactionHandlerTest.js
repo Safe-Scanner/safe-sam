@@ -1,6 +1,7 @@
 // Test Data Files
 const { transaction } = require("../../transaction/handler");
 const { expect } = require("chai");
+const { createTransaction } = require("../../transaction/createTransaction");
 
 describe("transaction Api", function () {
   // before(async function () {
@@ -10,7 +11,20 @@ describe("transaction Api", function () {
   // after(async function () {
   //   this.timeout(50000);
   // });
+  it("Get should have the sponsored and sponsoredBy with given user Op", async () => {
+    const hash = "0xb880799193a28259d609b004aaf9c6394b460e7a2524a5c63e546a0479ed4d12";
+    const response = await transaction({
+      queryStringParameters: {
+        hash,
+        network: "matic",
+      },
+    });
+    expect(response.statusCode).to.equal(200);
+    const responseBody = JSON.parse(response.body);
+    expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
+    expect(responseBody.transactionInfo).to.been.property("sponsorShip").to.be.true;
 
+  });
   it("Get important data such as 'safe' and 'transactionHash' for a transactionInfo using valid address and network", async () => {
     const hash='0xd0598d9d8e8996cfae68a1598777340f39ace7f87d2df967ae5b11937d790019'
     const response = await transaction({

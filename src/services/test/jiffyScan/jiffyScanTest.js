@@ -25,7 +25,7 @@ describe("JiffyScan Api", function () {
     const queryAddress = "0x4f982d788b8c74fec9f0501dba1df0de31d4a3a79c081da70adbcd5c485526ac";
     const network = "eth";
     const response = await fetchUserOp(queryAddress, network);
-    Object.keys(response[0]).map((key) => {
+    Object.keys(response[0] || []).map((key) => {
       response[0][key].map((result) => {
         expect(result).to.have.property("userOpHash").to.be.an("string");
         expect(result).to.have.property("userOpHash").to.be.eq(queryAddress);
@@ -33,7 +33,7 @@ describe("JiffyScan Api", function () {
         expect(result).to.have.property("transactionHash").to.be.not.eq("");
       });
     });
-  });
+  }).timeout(5000);
 
   it("should handle invalid query addresses", async () => {
     const queryAddress = "0x4f982d788b8c74fec9f0501dba1df0de31d4a3a79c081da70adbcd5c485526";

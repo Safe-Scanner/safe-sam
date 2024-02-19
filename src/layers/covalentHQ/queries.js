@@ -12,7 +12,8 @@ async function fetchERC20BalancesFromCovalent(address, network) {
   // Construct the Covalent API endpoint URL
   const api_key = process.env.COVALENT_KEY;
 
-  const url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_v2/?nft=true`;
+  const url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_v2/?nft=false&no-spam=true`;
+  const nft_url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_nft/`;
   // Configuration for the Axios request
   const config = {
     headers: {
@@ -26,9 +27,12 @@ async function fetchERC20BalancesFromCovalent(address, network) {
 
   try {
     // Make the GET request to the Covalent API
-    const response = await axios.get(url, config);
+    const [response, nft_response] = await axios.all([
+      axios.get(url, config),
+      axios.get(nft_url, config),
+    ]);
     // Return the response data (assuming you want to return data directly)
-    return response.data;
+    return { token: response.data, nft: nft_response.data };
   } catch (error) {
     // Handle errors, log to console, and return error details
     console.error("Error fetching data from Covalent:", error);

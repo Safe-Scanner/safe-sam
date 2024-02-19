@@ -5,6 +5,7 @@ const chain = require("viem/chains");
 
 const MODULE_TRANSACTION_TOPIC = process.env.MODULE_TRANSACTION_TOPIC;
 const MULTI_SIGNATURE_TRANSACTION_TOPIC = process.env.MULTI_SIGNATURE_TRANSACTION_TOPIC;
+const axios = require("axios");
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
@@ -19,12 +20,7 @@ const fetchAlchemyTransactionHash = async (hash, network) => {
       if (NETWORK_LIST[endpointName]?.alchemy?.network) {
         try {
           const alchemy = NETWORK_LIST[endpointName].alchemy;
-          const client = createPublicClient({
-            chain: chain[alchemy.chain],
-            transport: http(`https://${alchemy.network}.g.alchemy.com/v2/` + ALCHEMY_API_KEY),
-          });
-          const receipt = await client.getTransactionReceipt({ hash: hash });
-
+          const receipt = await getTransactionReceipt(hash, alchemy);
           for (const log of receipt.logs) {
             if (log.topics[0] === MODULE_TRANSACTION_TOPIC) {
               txInfo.safe = getAddress(log.address);
@@ -50,7 +46,38 @@ const fetchAlchemyTransactionHash = async (hash, network) => {
     console.error(`Error: ${error.message}`);
   }
 };
+async function getUserOperationReceipt(hash, alchemy) {
+  const options = {
+    method: "POST",
+    url: `https://${alchemy.network}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+    headers: { accept: "application/json", "content-type": "application/json" },
+    data: {
+      id: 1,
+      jsonrpc: "2.0",
+      method: "eth_getUserOperationReceipt",
+      params: [hash],
+    },
+  };
+  let receipt = await axios.request(options);
 
+  return receipt.data.result;
+}
+async function getTransactionReceipt(hash, alchemy) {
+  const options = {
+    method: "POST",
+    url: `https://${alchemy.network}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+    headers: { accept: "application/json", "content-type": "application/json" },
+    data: {
+      id: 1,
+      jsonrpc: "2.0",
+      method: "eth_getTransactionReceipt",
+      params: [hash],
+    },
+  };
+  let receipt = await axios.request(options);
+
+  return receipt.data.result;
+}
 module.exports = {
-  fetchAlchemyTransactionHash
+  fetchAlchemyTransactionHash,
 };

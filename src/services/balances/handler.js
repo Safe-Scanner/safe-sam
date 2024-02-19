@@ -25,8 +25,8 @@ module.exports.balances = middlewareHandler(async (event) => {
         body: { message: results.error_message },
       };
     }
-    const totalQuoteSum = results.data.items.reduce((sum, item) => sum + item.quote, 0);
-    const newData = results.data.items.map((item) => ({
+    const totalQuoteSum = results.token.data.items.reduce((sum, item) => sum + item.quote, 0);
+    const newData = results.token.data.items.map((item) => ({
       ...item,
       totalQuote: totalQuoteSum,
     }));
@@ -36,7 +36,7 @@ module.exports.balances = middlewareHandler(async (event) => {
         body: { message: "No record found" },
       };
     }
-    return newData;
+    return { token: newData, nft: results.nft.data.items };
   } else {
     return {
       statusCode: 403,

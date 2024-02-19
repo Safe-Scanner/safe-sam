@@ -67,7 +67,7 @@ describe("Search Api Test", function () {
     expect(result.body[network][0]).to.deep.equal(queryAddress);
   }).timeout(8000);
   it("Get SafeTransactionHash moduleId transaction from log should expect the transaction hash", async () => {
-    const queryAddress = "0x474bc557c4af98e72312537269665aa031fec5d3def8df164883d9b81460a93a";
+    const queryAddress = "0xe9710793f9d7d02acb64ffa0b9a8f05680f4a7d2e57bdd22dcaad3f45fdcb5fd";
     const result = await search({
       queryStringParameters: {
         query: queryAddress,
