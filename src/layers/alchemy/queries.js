@@ -41,7 +41,7 @@ const fetchAlchemyTransactionHash = async (hash, network) => {
               txInfo.sponsorType = "GELATO_SYNC_FEE_V2";
             }
           }
-          console.log(txInfo);
+          // console.log(txInfo);
           return txInfo;
         } catch (e) {
           console.log("Error in AlchemyApi ", e);

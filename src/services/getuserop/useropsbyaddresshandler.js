@@ -5,7 +5,7 @@ const { fetchUserOpByAddress } = require("../../layers/jiffyScan/userOp");
 module.exports.getuseropbyaddress = middlewareHandler(async (event) => {
   const txHash = event.safe;
   const network = event.network;
-  const first = !isNaN(event.first) ? parseInt(event.first) : 100;
+  const first = !isNaN(event.first) ? parseInt(event.first) : 10;
   const skip = !isNaN(event.skip) ? parseInt(event.skip) : 0;
 
   // Initialize an array to store the results

@@ -1,7 +1,7 @@
 // Test Data Files
 const { transaction } = require("../../transaction/handler");
 const { expect } = require("chai");
-const { createTransaction } = require("../../transaction/createTransaction");
+
 
 describe("transaction Api", function () {
   // before(async function () {
@@ -23,6 +23,22 @@ describe("transaction Api", function () {
     const responseBody = JSON.parse(response.body);
     expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
     expect(responseBody.transactionInfo).to.been.property("sponsorShip").to.be.true;
+
+  });
+  it("Get should have data decoded and sponsoredBy with given user Op", async () => {
+    const hash = "0x940d99b7c84c2759808249e24d4f00197365854d8fe9ee86e7a32be334d6bf82";
+    const response = await transaction({
+      queryStringParameters: {
+        hash,
+        network: "eth",
+      },
+    });
+    expect(response.statusCode).to.equal(200);
+    const responseBody = JSON.parse(response.body);
+    expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
+    expect(responseBody).to.have.property("type");
+    expect(responseBody.transactionInfo).to.have.property("sponsorShip").to.be.true;
+    expect(responseBody.transactionInfo).to.have.property("dataDecoded");
 
   });
   it("Get important data such as 'safe' and 'transactionHash' for a transactionInfo using valid address and network", async () => {

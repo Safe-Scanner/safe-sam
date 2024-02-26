@@ -1,5 +1,6 @@
-const { NETWORK_LIST } = require("../../common/constant");
+const { NETWORK_LIST, TRANSACTION_TYPES } = require("../../common/constant");
 const axios = require("axios");
+const { postDataDecored } = require("../safeApi/transactionQueries");
 
 async function fetchUserOp(txHash, network) {
   let results = [];
@@ -45,7 +46,6 @@ async function fetchUserOp(txHash, network) {
   try {
     // Execute all requests concurrently
     await Promise.all(endpointPromises);
-    console.log("result---", results);
     return results;
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -61,6 +61,7 @@ async function fetchUserOpByAddress(txHash, network, first = 100, skip = 0) {
     .map(async ([endpointName]) => {
       let modifiedEndpointUrl;
       if (NETWORK_LIST[endpointName]?.jiffysan_network) {
+        network=endpointName
         modifiedEndpointUrl = `${jiffy_scan_endpoint}/getAddressActivity?address=${txHash}`;
         modifiedEndpointUrl = `${modifiedEndpointUrl}&network=${NETWORK_LIST[endpointName]?.jiffysan_network}&first=${first}&skip=${skip}`;
         // Configuration for the Axios request
@@ -77,7 +78,29 @@ async function fetchUserOpByAddress(txHash, network, first = 100, skip = 0) {
 
           if (response.status === 200) {
             // Add the response data to the result array
-            if (response?.data) results.push({ [endpointName]: response.data });
+            if (response?.data?.accountDetail) {
+              const userOps = response.data?.accountDetail?.userOps ||[];
+              const updatedUserOps = [];
+              const postDataDecodedPromises =userOps.map(async (userOp) => {
+                if (response.data) {
+                  const dateDecodedResults = await postDataDecored(
+                    userOp.callData[0],
+                    userOp.target[0],
+                    network
+                  );
+                  if (dateDecodedResults.length > 0) {
+                    updatedUserOps.push({ ...userOp, dataDecoded: dateDecodedResults[0].dataDecoded });
+                  } else {
+                    updatedUserOps.push({ ...userOp, dataDecoded: {} });
+                  }
+                } else {
+                  updatedUserOps.push({ ...userOp, dataDecoded: {} });
+                }
+              });
+              await Promise.all(postDataDecodedPromises);
+              response.data.accountDetail.userOps = updatedUserOps;
+              results.push({ [endpointName]: response.data });
+            }
           } else {
             // If the request was not successful, log an error message
             console.error(
@@ -94,7 +117,6 @@ async function fetchUserOpByAddress(txHash, network, first = 100, skip = 0) {
   try {
     // Execute all requests concurrently
     await Promise.all(endpointPromises);
-    console.log("result---", results);
     return results;
   } catch (error) {
     console.error(`Error: ${error.message}`);

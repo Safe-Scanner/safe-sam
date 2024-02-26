@@ -7,11 +7,11 @@ describe("Get userOps Api", function () {
   });
 
   it("GET UserOp hash using transaction hash", async () => {
-    const query = "0x4f982d788b8c74fec9f0501dba1df0de31d4a3a79c081da70adbcd5c485526ac";
+    const query = "0x6f2e9531e81f6557028af9f3df51f10471445a8f2cebae37b928d19fe9aac805";
     const response = await getuserops({
       queryStringParameters: {
         hash: query,
-        network:'eth'
+        network:'matic'
       },
     });
     expect(response.statusCode).to.equal(200);
@@ -22,7 +22,7 @@ describe("Get userOps Api", function () {
         expect(responseData).to.have.property("transactionHash").to.be.an.not.eq("");
       }
     }
-  }).timeout(5000);
+  }).timeout(50000);
 
   it("GET UserOp hash using Query address with network", async () => {
     const response = await getuserops({

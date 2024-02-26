@@ -262,9 +262,67 @@ async function fetchTxFromSafe(address, txHash, network = null, txType = null) {
     console.error(`Error: ${error.message}`);
   }
 }
+
+async function postDataDecored(calldata, sender,network) {
+  let results = [];
+  // queryAddress = queryAddress;
+
+  // Use Object.entries to convert the object into an array of key-value pairs
+  const endpointPromises = Object.entries(NETWORK_LIST)
+    .filter(([endpointName]) => !network || endpointName.toLowerCase() === network.toLowerCase())
+    .map(async ([endpointName, endpointUrl]) => {
+      let modifiedEndpointUrl;
+      modifiedEndpointUrl = endpointUrl.endpointUrl;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}data-decoder/`;
+
+      const raw = {
+        'data':calldata,
+        'to':sender
+      }
+     
+      try {
+        // Make an HTTP post request to the network endpoint
+        const response = await axios.post(modifiedEndpointUrl,raw);
+       
+
+        if (response.status === 200) {
+          // Add the response data to the result array
+          if (response?.data) {
+            if(response.data?.parameters?.length>0 && response?.data?.parameters[0]?.valueDecoded?.length>0) {
+              results.push({
+                dataDecoded: response.data?.parameters[0]?.valueDecoded[0]?.dataDecoded,
+              });
+            }else{
+              results.push({
+                dataDecoded: response.data
+              });
+            }
+          }
+        } else {
+          // If the request was not successful, log an error message
+          console.error(
+            `Error: Unable to fetch data from ${endpointName}. Status code: ${response.status}`
+          );
+        }
+      } catch (error) {
+        // Handle any exceptions that may occur during the request
+        console.error(`Error: ${error.message}`);
+      }
+    });
+
+  try {
+    // Execute all requests concurrently
+    await Promise.all(endpointPromises);
+    return results;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
+
 module.exports = {
   fetchTxFromSafe,
   fetchMultiSignatureTransaction,
   fetchModuleTransaction,
   fetchAllTransactions,
+  postDataDecored
 };

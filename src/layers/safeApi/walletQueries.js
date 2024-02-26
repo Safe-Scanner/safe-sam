@@ -35,7 +35,6 @@ async function fetchBalances(walletAddress) {
   try {
     // Execute all requests concurrently
     await Promise.all(endpointPromises);
-    console.log("result---", results);
     return results;
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -125,7 +124,6 @@ async function fetchWallet(walletAddress, network) {
   try {
     // Execute all requests concurrently
     await Promise.all(endpointPromises);
-    console.log("result---", results);
     return results;
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -166,7 +164,6 @@ async function fetchCreation(walletAddress, network) {
   try {
     // Execute all requests concurrently
     await Promise.all(endpointPromises);
-    console.log("result---", results);
     return results;
   } catch (error) {
     console.error(`Error: ${error.message}`);

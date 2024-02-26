@@ -25,7 +25,8 @@ describe("SafeApi AllTransaction Api", function () {
           offset: offset,
         }
       );
-
+console.log(response[0],{ limit: limit,
+  offset: offset})
       const key = Object.keys(response[0])[0];
       data = response[0][key];
       page_size += data.results.length;

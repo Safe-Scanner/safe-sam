@@ -5,6 +5,7 @@ const {
   fetchTxFromSafe,
   fetchModuleTransaction,
   fetchMultiSignatureTransaction,
+  postDataDecored,
 } = require("../../layers/safeApi/transactionQueries");
 const { fetchAlchemyTransactionHash } = require("../../layers/alchemy/queries");
 const { isModuleTransaction, isTransactionHash } = require("../../common/utils");
@@ -26,15 +27,45 @@ module.exports.transaction = middlewareHandler(async (event) => {
     const key = Object.keys(userOpResponse)[0];
     const userOp = userOpResponse[key][0];
     const poweredByResponse = await getPoweredBy("", userOp.paymaster);
-    results = {
-      type: TRANSACTION_TYPES.USEROPS,
-      network: key,
-      transactionInfo: {
-        ...userOp,
-        sponsoredType: "Paymaster",
-        sponsoredBy: poweredByResponse,
-      },
-    };
+
+    if (userOp.target.length > 0) {
+      results = await postDataDecored(userOp.callData[0], userOp.target[0], network);
+      if (results.length > 0) {
+        results = {
+          type: TRANSACTION_TYPES.USEROPS,
+          network: key,
+          transactionInfo: {
+            ...userOp,
+            dataDecoded: results[0].dataDecoded,
+            sponsoredType: "Paymaster",
+            sponsoredBy: poweredByResponse,
+          },
+        };
+      } else {
+        results = {
+          type: TRANSACTION_TYPES.USEROPS,
+          network: key,
+          transactionInfo: {
+            ...userOp,
+            sponsoredType: "Paymaster",
+            dataDecoded: {},
+            sponsoredBy: poweredByResponse,
+          },
+        };
+      }
+
+    } else {
+      results = {
+        type: TRANSACTION_TYPES.USEROPS,
+        network: key,
+        transactionInfo: {
+          ...userOp,
+          sponsoredType: "Paymaster",
+          dataDecoded: {},
+          sponsoredBy: poweredByResponse,
+        },
+      };
+    }
   } else {
     // Fetch data for all endpoints concurrently
     if (alchmyResponse?.safe) {

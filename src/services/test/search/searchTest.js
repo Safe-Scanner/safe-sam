@@ -18,7 +18,7 @@ describe("Search Api Test", function () {
       },
     });
     result.body = JSON.parse(result.body);
-    console.log(result);
+    // console.log(result);
     expect(result.statusCode).to.equal(200);
     expect(result.body).to.be.an("object");
     expect(Object.keys(result)).to.have.length.at.least(1);
@@ -37,7 +37,7 @@ describe("Search Api Test", function () {
       },
     });
     result.body = JSON.parse(result.body);
-    console.log(result);
+    // console.log(result);
     expect(result.statusCode).to.equal(200);
     expect(result.body).to.be.an("object");
     expect(Object.keys(result)).to.have.length.at.least(1);
@@ -56,7 +56,7 @@ describe("Search Api Test", function () {
       },
     });
     result.body = JSON.parse(result.body);
-    console.log(result);
+    // console.log(result);
     expect(result.statusCode).to.equal(200);
     expect(result.body).to.be.an("object");
     expect(Object.keys(result)).to.have.length.at.least(1);
@@ -67,7 +67,7 @@ describe("Search Api Test", function () {
     expect(result.body[network][0]).to.deep.equal(queryAddress);
   }).timeout(8000);
   it("Get SafeTransactionHash moduleId transaction from log should expect the transaction hash", async () => {
-    const queryAddress = "0xe9710793f9d7d02acb64ffa0b9a8f05680f4a7d2e57bdd22dcaad3f45fdcb5fd";
+    const queryAddress = "0x474bc557c4af98e72312537269665aa031fec5d3def8df164883d9b81460a93a";
     const result = await search({
       queryStringParameters: {
         query: queryAddress,
@@ -75,7 +75,7 @@ describe("Search Api Test", function () {
       },
     });
     result.body = JSON.parse(result.body);
-    console.log(result);
+    // console.log(result);
     expect(result.statusCode).to.equal(200);
     expect(result.body).to.be.an("object");
     expect(Object.keys(result)).to.have.length.at.least(1);
@@ -94,7 +94,7 @@ describe("Search Api Test", function () {
       },
     });
     result.body = JSON.parse(result.body);
-    console.log(result);
+    // console.log(result);
     expect(result.statusCode).to.equal(200);
     expect(result.body).to.be.an("object");
     expect(Object.keys(result)).to.have.length.at.least(1);
