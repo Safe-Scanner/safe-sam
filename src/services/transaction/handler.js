@@ -27,7 +27,14 @@ module.exports.transaction = middlewareHandler(async (event) => {
     const key = Object.keys(userOpResponse)[0];
     const userOp = userOpResponse[key][0];
     const poweredByResponse = await getPoweredBy("", userOp.paymaster);
+    const poweredresult  = poweredByResponse.resultData;
+    let  sponsoredName = "";
 
+    for (const key in poweredresult) {
+      if (key === userOp.paymaster && poweredresult[key].type === "PAYMASTERS") {
+        sponsoredName = poweredresult[key].company
+      }
+    }
     if (userOp.target.length > 0) {
       results = await postDataDecored(userOp.callData[0], userOp.target[0], network);
       if (results.length > 0) {
@@ -38,7 +45,7 @@ module.exports.transaction = middlewareHandler(async (event) => {
             ...userOp,
             dataDecoded: results[0].dataDecoded,
             sponsoredType: "Paymaster",
-            sponsoredBy: poweredByResponse,
+            sponsoredBy: sponsoredName,
           },
         };
       } else {
@@ -49,7 +56,7 @@ module.exports.transaction = middlewareHandler(async (event) => {
             ...userOp,
             sponsoredType: "Paymaster",
             dataDecoded: {},
-            sponsoredBy: poweredByResponse,
+            sponsoredBy: sponsoredName,
           },
         };
       }
@@ -62,7 +69,7 @@ module.exports.transaction = middlewareHandler(async (event) => {
           ...userOp,
           sponsoredType: "Paymaster",
           dataDecoded: {},
-          sponsoredBy: poweredByResponse,
+          sponsoredBy: sponsoredName,
         },
       };
     }
