@@ -22,7 +22,7 @@ describe("transaction Api", function () {
     expect(response.statusCode).to.equal(200);
     const responseBody = JSON.parse(response.body);
     expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
-    expect(responseBody.transactionInfo).to.been.property("sponsorShip").to.be.true;
+    expect(responseBody.transactionInfo).to.been.property("sponsoredBy").exist;
 
   });
   it("Get should have data decoded and sponsoredBy with given user Op", async () => {
@@ -37,16 +37,16 @@ describe("transaction Api", function () {
     const responseBody = JSON.parse(response.body);
     expect(responseBody).to.have.property("transactionInfo").to.be.an("object");
     expect(responseBody).to.have.property("type");
-    expect(responseBody.transactionInfo).to.have.property("sponsorShip").to.be.true;
+    expect(responseBody.transactionInfo).to.have.property("sponsoredBy").exist;
     expect(responseBody.transactionInfo).to.have.property("dataDecoded");
 
   });
   it("Get important data such as 'safe' and 'transactionHash' for a transactionInfo using valid address and network", async () => {
-    const hash='0xd0598d9d8e8996cfae68a1598777340f39ace7f87d2df967ae5b11937d790019'
+    const hash='0xa77971438e2b59b8054d392eb9c2f3f018723bcac078553692a2a41fdd2106b0'
     const response = await transaction({
       queryStringParameters: {
         hash,
-        network: "matic",
+        network: "sep",
       },
     });
     expect(response.statusCode).to.equal(200);
