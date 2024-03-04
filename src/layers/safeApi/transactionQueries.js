@@ -121,7 +121,7 @@ async function fetchMultiSignatureTransaction(txHash, network) {
   }
 }
 async function fetchAllTransactions(txHash, network, options) {
-  const { ordering, limit, offset, executed, queued, trusted } = options;
+  const { ordering, first, skip, executed, queued, trusted } = options;
   const results = [];
   // queryAddress = getAddress(queryAddress);
   // return;
@@ -132,7 +132,7 @@ async function fetchAllTransactions(txHash, network, options) {
       let modifiedEndpointUrl;
       modifiedEndpointUrl = endpointUrl.endpointUrl;
       modifiedEndpointUrl = `${modifiedEndpointUrl}safes/${txHash}/all-transactions?`;
-      modifiedEndpointUrl = `${modifiedEndpointUrl}limit=${limit}&offset=${offset}`;
+      modifiedEndpointUrl = `${modifiedEndpointUrl}limit=${first}&offset=${skip}`;
       if (isWalletAddress(txHash)) {
         if (ordering) {
           modifiedEndpointUrl = `${modifiedEndpointUrl}&ordering=${ordering}`;
@@ -164,7 +164,7 @@ async function fetchAllTransactions(txHash, network, options) {
               for (const transaction of transactions) {
                 // const safeWalletAddress = transaction.safe;
                 for (const safeOwnerDetail of safeOwnerDetails) {
-                  const ownerdata = safeOwnerDetail?.[network];
+                  const ownerdata = [safeOwnerDetail?.[Object.keys(safeOwnerDetail)[0]]];
                   if (ownerdata && ownerdata.length > 0) {
                     for (const ownerDetail of ownerdata) {
                       const confirmationResult = [];

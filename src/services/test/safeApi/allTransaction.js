@@ -21,12 +21,11 @@ describe("SafeApi AllTransaction Api", function () {
         "0x116768eA54366Ad7a843c9b14901f45e8acFba9D",
         "",
         {
-          limit: limit,
-          offset: offset,
+          first: limit,
+          skip: offset,
         }
       );
-console.log(response[0],{ limit: limit,
-  offset: offset})
+
       const key = Object.keys(response[0])[0];
       data = response[0][key];
       page_size += data.results.length;
@@ -50,8 +49,8 @@ console.log(response[0],{ limit: limit,
         "0x116768eA54366Ad7a843c9b14901f45e8acFba9D",
         "matic",
         {
-          limit: limit,
-          offset: offset,
+          first: limit,
+          skip: offset,
         }
       );
 

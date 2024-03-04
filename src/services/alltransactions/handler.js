@@ -7,11 +7,11 @@ const { fetchAllTransactions } = require("../../layers/safeApi/transactionQuerie
 module.exports.alltransactions = middlewareHandler(async (event) => {
   const queryAddress = event.query;
   const network = event.network;
-  const { ordering, offset, executed, queued, trusted, limit } = event;
+  const { ordering,first, skip, executed, queued, trusted } = event;
   // Initialize an array to store the results
   let results = [];
-  const pageSize = limit > 0 ? limit : 25;
-  const page = offset ? offset : 0;
+  const pageSize = !isNaN(first) ? parseInt(first) : 10;
+  const page = !isNaN(skip) ? parseInt(skip) : 0;
   const orderList = ordering ? ordering : null;
   const isExecuted = !!executed;
   const isTrusted = !!trusted;
@@ -21,8 +21,8 @@ module.exports.alltransactions = middlewareHandler(async (event) => {
   if (isWalletAddress(queryAddress)) {
     results = await fetchAllTransactions(queryAddress, network, {
       ordering: orderList,
-      limit: pageSize,
-      offset: page,
+      first: pageSize,
+      skip: page,
       executed: isExecuted,
       queued: isTrusted,
       trusted: isQueued,

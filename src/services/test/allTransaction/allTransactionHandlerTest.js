@@ -10,18 +10,18 @@ describe("alltransaction Api test", function () {
     this.timeout(50000);
   });
   it("list: should list the transaction with pagination and without network", async function () {
-    let offset = 1;
-    let limit = 1;
+    let skip = 1;
+    let first = 1;
     let data = null;
     let page_size = 0;
-    for (offset = 0; !data || data.next; offset++) {
+    for (skip = 0; !data || data.next; skip++) {
       const response = await alltransactions({
         queryStringParameters: {
           query: "0x116768eA54366Ad7a843c9b14901f45e8acFba9D",
-          limit: limit,
-          offset: offset,
+          first: first,
+          skip: skip,
         },
-      });
+      })
       expect(response.statusCode).to.equal(200);
 
       response.body = JSON.parse(response.body);
@@ -39,16 +39,16 @@ describe("alltransaction Api test", function () {
     expect(page_size).to.be.equal(data.count);
   }).timeout(50000);
   it("list: should list the transaction with pagination and with network", async function () {
-    let offset = 1;
-    let limit = 1;
+    let skip = 1;
+    let first = 1;
     let data = null;
     let page_size = 0;
-    for (offset = 0; !data || data.next; offset++) {
+    for (skip = 0; !data || data.next; skip++) {
       const response = await alltransactions({
         queryStringParameters: {
           query: "0x116768eA54366Ad7a843c9b14901f45e8acFba9D",
-          limit: limit,
-          offset: offset,
+          first: first,
+          skip: skip,
           network: "matic",
         },
       });
