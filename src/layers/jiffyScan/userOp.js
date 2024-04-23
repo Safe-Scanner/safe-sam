@@ -28,7 +28,7 @@ async function fetchUserOp(txHash, network) {
 
           if (response.status === 200) {
             // Add the response data to the result array
-            if (response?.data?.userOps?.length > 0)
+            if (response?.data?.userOps.length === 1 && Object.keys(response?.data?.userOps[0]).length !== 0)
               results.push({ [endpointName]: response.data.userOps });
           } else {
             // If the request was not successful, log an error message

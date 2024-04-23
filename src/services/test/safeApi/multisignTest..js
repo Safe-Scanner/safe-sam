@@ -11,8 +11,8 @@ describe("safeApi multiSign transaction Api", function () {
   });
 
   it("Get important data such as 'safe' and 'transactionHash' for a multisign-transaction using valid address and network", async () => {
-    const queryAddress = "0xc89a7df866aa282e70e75403f5bca9f4c4bc449c3b81243dc1eeb2b2e1b834a3";
-    const network = "matic";
+    const queryAddress = "0x0af4f60a2cab25e05647467ca221384fbdafb1bfecefcbc4a76f49af299102a1";
+    const network = "eth";
     const response = await fetchMultiSignatureTransaction(queryAddress, network);
 
     for (const item of response) {

@@ -29,7 +29,7 @@ describe("Search Api Test", function () {
     expect(result.body[network][0]).to.deep.equal(queryAddress);
   }).timeout(8000);
   it("Get SafeTransactionHash multisign transaction should expect the safe transaction hash", async () => {
-    const queryAddress = "0x7a8a08a342b21e6fa37e3ef82597616504ecde1357d56e2f029bdb0621cf5c98";
+    const queryAddress = "0xcae58a8d6acb23a621e23aab97806b32f131dc13eee0216b53230388a8ba9b38";
     const result = await search({
       queryStringParameters: {
         query: queryAddress,
@@ -48,7 +48,7 @@ describe("Search Api Test", function () {
     expect(result.body[network][0]).to.deep.equal(queryAddress);
   }).timeout(8000);
   it("Get SafeTransactionHash moduleId transaction should expect the transaction hash", async () => {
-    const queryAddress = "i34be94bc6671b1b2d2d8d5d00f92b607035dd76daba38f650dde0ca5121bc5ea96";
+    const queryAddress = "0xb76068b3423a8534fdf36fbbd4b3b83f973b90045a221b01b2df14f1a6abf7b7";
     const result = await search({
       queryStringParameters: {
         query: queryAddress,

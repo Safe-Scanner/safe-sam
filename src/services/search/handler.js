@@ -74,10 +74,10 @@ module.exports.search = middlewareHandler(async (event) => {
               const safesArray = data || [];
               if (resultObject[network.toLowerCase()] !== undefined) {
                 resultObject[network.toLowerCase()] = [
-                  ...new Set(resultObject[network.toLowerCase()].concat(safesArray.safe)),
+                  ...new Set(resultObject[network.toLowerCase()].concat(safesArray.transactionHash)),
                 ];
               } else {
-                resultObject[network.toLowerCase()] = [safesArray.safe];
+                resultObject[network.toLowerCase()] = [safesArray.transactionHash];
               }
             });
           });

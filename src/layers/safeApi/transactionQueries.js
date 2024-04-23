@@ -65,41 +65,35 @@ async function fetchMultiSignatureTransaction(txHash, network) {
           if (response.data && safeOwnerDetails && safeOwnerDetails.length > 0) {
             const transactions = response.data;
             const transactionResult = [];
+            const owners = safeOwnerDetails[0]?.[Object.keys(safeOwnerDetails[0])[0]]?.owners;
+            const confirmationResult = [];
+            const foundOwners = new Set();
+
             if (transactions) {
-              // const safeWalletAddress = transaction.safe;
-              for (const safeOwnerDetail of safeOwnerDetails) {
-                const ownerdata = [safeOwnerDetail?.[Object.keys(safeOwnerDetail)[0]]];
-                if (ownerdata && ownerdata.length > 0) {
-                  for (const ownerDetail of ownerdata) {
-                    const confirmationResult = [];
-                    const owners = ownerDetail.owners;
-                    for (const owner of owners) {
-                      const confirmations = transactions.confirmations;
-                      if (confirmations && confirmations.length > 0)
-                        for (const confirmation of confirmations) {
-                          if (owner === confirmation.owner) {
-                            confirmationResult.push({
-                              ...confirmation,
-                              confirmationSignStatus: "CONFIRMED",
-                            });
-                          } else {
-                            confirmationResult.push({
-                              owner: owner,
-                              confirmationSignStatus: null,
-                            });
-                          }
-                        }
-                    }
-                    transactions.confirmations = confirmationResult;
+              const confirmations = transactions.confirmations;
+              if (confirmations && confirmations.length > 0) {
+                confirmations.forEach((confirmation) => {
+                  if (owners.includes(confirmation.owner)) {
+                    confirmationResult.push({
+                      ...confirmation,
+                      confirmationSignStatus: "CONFIRMED",
+                    });
+                    foundOwners.add(confirmation.owner);
                   }
-                }
+                });
               }
-              transactionResult.push(transactions);
             }
+            owners.forEach((owner) => {
+              if (!foundOwners.has(owner)) {
+                confirmationResult.push({ owner, confirmationSignStatus: null });
+              }
+            });
+            transactions.confirmations = confirmationResult;
+
+            transactionResult.push(transactions);
             response.data = transactionResult;
             results.push({ [endpointName]: response.data[0] });
             return results;
-            // Promise.resolve(results);
           }
         } else {
           // If the request was not successful, log an error message
@@ -123,8 +117,6 @@ async function fetchMultiSignatureTransaction(txHash, network) {
 async function fetchAllTransactions(txHash, network, options) {
   const { ordering, first, skip, executed, queued, trusted } = options;
   const results = [];
-  // queryAddress = getAddress(queryAddress);
-  // return;
   // Use Object.entries to convert the object into an array of key-value pairs
   const endpointPromises = Object.entries(NETWORK_LIST)
     .filter(([endpointName]) => !network || endpointName.toLowerCase() === network.toLowerCase())
@@ -263,7 +255,7 @@ async function fetchTxFromSafe(address, txHash, network = null, txType = null) {
   }
 }
 
-async function postDataDecored(calldata, sender,network) {
+async function postDataDecored(calldata, sender, network) {
   let results = [];
   // queryAddress = queryAddress;
 
@@ -288,13 +280,16 @@ async function postDataDecored(calldata, sender,network) {
         if (response.status === 200) {
           // Add the response data to the result array
           if (response?.data) {
-            if(response.data?.parameters?.length>0 && response?.data?.parameters[0]?.valueDecoded?.length>0) {
+            if (
+              response.data?.parameters?.length > 0 &&
+              response?.data?.parameters[0]?.valueDecoded?.length > 0
+            ) {
               results.push({
                 dataDecoded: response.data?.parameters[0]?.valueDecoded[0]?.dataDecoded,
               });
-            }else{
+            } else {
               results.push({
-                dataDecoded: response.data
+                dataDecoded: response.data,
               });
             }
           }
@@ -324,5 +319,5 @@ module.exports = {
   fetchMultiSignatureTransaction,
   fetchModuleTransaction,
   fetchAllTransactions,
-  postDataDecored
+  postDataDecored,
 };
