@@ -13,7 +13,7 @@ async function fetchERC20BalancesFromCovalent(address, network) {
   const api_key = process.env.COVALENT_KEY;
 
   const url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_v2/?nft=false&no-spam=true`;
-  const nft_url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_nft/`;
+  const nft_url = `https://api.covalenthq.com/v1/${NETWORK_LIST[network]?.covalient_chain}/address/${address}/balances_nft/?with-uncached=true`;
   // Configuration for the Axios request
   const config = {
     headers: {
